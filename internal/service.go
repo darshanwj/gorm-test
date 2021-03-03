@@ -22,7 +22,7 @@ func NewUserService(db *gorm.DB) UserService {
 
 func (us userService) GetUser(ctx context.Context, id uint) model.User {
 	var user model.User
-	err := us.db.WithContext(ctx).First(&user, id).Error
+	err := us.db.WithContext(ctx).Preload("Comments").First(&user, id).Error
 	if err != nil {
 		log.Println(err.Error())
 	}
