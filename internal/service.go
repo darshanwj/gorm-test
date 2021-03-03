@@ -10,6 +10,7 @@ import (
 
 type UserService interface {
 	GetUser(ctx context.Context, id uint) model.User
+	GetUsers(ctx context.Context) []model.User
 }
 
 type userService struct {
@@ -22,10 +23,18 @@ func NewUserService(db *gorm.DB) UserService {
 
 func (us userService) GetUser(ctx context.Context, id uint) model.User {
 	var user model.User
-	err := us.db.WithContext(ctx).Preload("Comments").First(&user, id).Error
+	err := us.db.WithContext(ctx).Preload("Comments").Take(&user, id).Error
 	if err != nil {
 		log.Println(err.Error())
 	}
-	log.Println(user)
 	return user
+}
+
+func (us userService) GetUsers(ctx context.Context) []model.User {
+	var users []model.User
+	err := us.db.WithContext(ctx).Preload("Comments").Find(&users).Error
+	if err != nil {
+		log.Println(err.Error())
+	}
+	return users
 }

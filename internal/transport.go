@@ -13,6 +13,7 @@ func NewHTTPHandler(us UserService) http.Handler {
 	r := mux.NewRouter()
 	r.Methods("GET").Path("/").Handler(transport.NewServer(makeHomeEndpoint(), decodeHomeRequest, encodeResponse))
 	r.Methods("GET").Path("/user").Handler(transport.NewServer(makeGetUserEndpoint(us), decodeGetUserRequest, encodeResponse))
+	r.Methods("GET").Path("/users").Handler(transport.NewServer(makeGetUsersEndpoint(us), decodeGetUsersRequest, encodeResponse))
 	return r
 }
 
@@ -22,6 +23,10 @@ func decodeHomeRequest(_ context.Context, r *http.Request) (interface{}, error) 
 
 func decodeGetUserRequest(_ context.Context, r *http.Request) (interface{}, error) {
 	return getUserRequest{}, nil
+}
+
+func decodeGetUsersRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	return getUsersRequest{}, nil
 }
 
 func encodeResponse(_ context.Context, w http.ResponseWriter, response interface{}) error {
