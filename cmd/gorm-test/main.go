@@ -15,10 +15,15 @@ func main() {
 	// logger
 	log, _ := zap.NewDevelopment()
 	// flushes buffer, if any
-	defer log.Sync()
+	defer func() {
+		_ = log.Sync()
+	}()
 
 	// load config
-	conf := config.NewReader(log).Read()
+	conf, err := config.NewReader(log).Read()
+	if err != nil {
+		log.Fatal("could not load config", zap.Error(err))
+	}
 	log.Debug("loaded config", zap.Any("settings", conf.AllSettings()))
 
 	// DB connection
