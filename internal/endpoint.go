@@ -44,3 +44,20 @@ func makeGetUsersEndpoint(us UserService) endpoint.Endpoint {
 		return getUsersResponse{Users: users}, nil
 	}
 }
+
+type createUserRequest struct {
+	Name  string `json:"name"`
+	Phone string `json:"phone"`
+}
+
+type createUserResponse struct {
+	User model.User `json:"user"`
+}
+
+func makeCreateUserEndpoint(us UserService) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (interface{}, error) {
+		cur := request.(createUserRequest)
+		user := us.CreateUser(ctx, cur)
+		return createUserResponse{User: user}, nil
+	}
+}

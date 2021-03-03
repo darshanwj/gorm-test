@@ -11,6 +11,7 @@ import (
 type UserService interface {
 	GetUser(ctx context.Context, id uint) model.User
 	GetUsers(ctx context.Context) []model.User
+	CreateUser(ctx context.Context, cur createUserRequest) model.User
 }
 
 type userService struct {
@@ -37,4 +38,16 @@ func (us userService) GetUsers(ctx context.Context) []model.User {
 		log.Println(err.Error())
 	}
 	return users
+}
+
+func (us userService) CreateUser(ctx context.Context, cur createUserRequest) model.User {
+	user := model.User{
+		Name:  cur.Name,
+		Phone: cur.Phone,
+	}
+	res := us.db.WithContext(ctx).Create(&user)
+	if res.Error != nil {
+		log.Println(res.Error)
+	}
+	return user
 }

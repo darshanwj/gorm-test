@@ -14,6 +14,7 @@ func NewHTTPHandler(us UserService) http.Handler {
 	r.Methods("GET").Path("/").Handler(transport.NewServer(makeHomeEndpoint(), decodeHomeRequest, encodeResponse))
 	r.Methods("GET").Path("/user").Handler(transport.NewServer(makeGetUserEndpoint(us), decodeGetUserRequest, encodeResponse))
 	r.Methods("GET").Path("/users").Handler(transport.NewServer(makeGetUsersEndpoint(us), decodeGetUsersRequest, encodeResponse))
+	r.Methods("POST").Path("/user").Handler(transport.NewServer(makeCreateUserEndpoint(us), decodeCreateUserRequest, encodeResponse))
 	return r
 }
 
@@ -27,6 +28,15 @@ func decodeGetUserRequest(_ context.Context, r *http.Request) (interface{}, erro
 
 func decodeGetUsersRequest(_ context.Context, r *http.Request) (interface{}, error) {
 	return getUsersRequest{}, nil
+}
+
+func decodeCreateUserRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	var req createUserRequest
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		return nil, err
+	}
+	return req, nil
 }
 
 func encodeResponse(_ context.Context, w http.ResponseWriter, response interface{}) error {
