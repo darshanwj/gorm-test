@@ -1,0 +1,2 @@
+[mysql]
+dsn = "user:pass@tcp(host:port)/dbname"

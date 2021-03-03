@@ -2,6 +2,7 @@ package main
 
 import (
 	"darshanwj/gorm-test/internal"
+	"darshanwj/gorm-test/internal/config"
 	"net/http"
 
 	"go.uber.org/zap"
@@ -16,22 +17,28 @@ func main() {
 	// flushes buffer, if any
 	defer log.Sync()
 
-	// DB connection, read from config
+	// load config
+	conf := config.NewReader(log).Read()
+	log.Debug("loaded config", zap.Any("settings", conf.AllSettings()))
+
+	// DB connection
 	db, err := gorm.Open(
-		mysql.Open("root:root@tcp(127.0.0.1:3326)/gokit"),
+		mysql.Open(conf.GetString("mysql.dsn")),
 		&gorm.Config{Logger: gormlogger.Default.LogMode(gormlogger.Info)},
 	)
 	if err != nil {
 		log.Fatal("could not connect to mysql db", zap.Error(err))
 	}
+	log.Debug("connected to mysql db")
 
 	// User service
 	us := internal.NewUserService(db, log)
 
-	// Http transport handler
+	// Http transport router
 	h := internal.NewHTTPHandler(us)
 
 	// Run web server
+	log.Debug("serving...")
 	err = http.ListenAndServe(":8082", h)
 	if err != nil {
 		log.Fatal("could not start server", zap.Error(err))
