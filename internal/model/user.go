@@ -6,7 +6,3 @@ type User struct {
 	Phone    string    `json:"phone"`
 	Comments []Comment `json:"comments"`
 }
-
-func (User) TableName() string {
-	return "user"
-}

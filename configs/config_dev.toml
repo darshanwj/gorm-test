@@ -1,2 +1,2 @@
 [mysql]
-dsn = "root:root@tcp(127.0.0.1:3326)/gokit"
+dsn = "root:root@tcp(127.0.0.1:3336)/gorm"

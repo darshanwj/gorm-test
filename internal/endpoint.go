@@ -19,7 +19,9 @@ func makeHomeEndpoint() endpoint.Endpoint {
 	}
 }
 
-type getUserRequest struct{}
+type getUserRequest struct {
+	Id int
+}
 
 type getUserResponse struct {
 	User model.User `json:"user"`
@@ -27,7 +29,8 @@ type getUserResponse struct {
 
 func makeGetUserEndpoint(us UserService) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
-		user := us.GetUser(ctx, 10)
+		gur := request.(getUserRequest)
+		user := us.GetUser(ctx, uint(gur.Id))
 		return getUserResponse{User: user}, nil
 	}
 }

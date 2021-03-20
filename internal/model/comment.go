@@ -5,7 +5,3 @@ type Comment struct {
 	Content string `json:"content"`
 	UserID  uint   `json:"-"`
 }
-
-func (Comment) TableName() string {
-	return "comment"
-}
