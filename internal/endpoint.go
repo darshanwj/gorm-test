@@ -64,3 +64,19 @@ func makeCreateUserEndpoint(us UserService) endpoint.Endpoint {
 		return createUserResponse{User: user}, nil
 	}
 }
+
+type getCommentsRequest struct {
+	UserId int
+}
+
+type getCommentsResponse struct {
+	Comments []model.Comment `json:"comments"`
+}
+
+func makeGetCommentsEndpoint(us UserService) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (interface{}, error) {
+		gcr := request.(getCommentsRequest)
+		comments := us.GetComments(ctx, gcr)
+		return getCommentsResponse{Comments: comments}, nil
+	}
+}

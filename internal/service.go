@@ -13,6 +13,7 @@ type UserService interface {
 	GetUser(ctx context.Context, id uint) model.User
 	GetUsers(ctx context.Context) []model.User
 	CreateUser(ctx context.Context, cur createUserRequest) model.User
+	GetComments(ctx context.Context, gcr getCommentsRequest) []model.Comment
 }
 
 type userService struct {
@@ -56,4 +57,13 @@ func (us userService) CreateUser(ctx context.Context, cur createUserRequest) mod
 		us.log.Error("db error when creating user", zap.Error(res.Error))
 	}
 	return user
+}
+
+func (us userService) GetComments(ctx context.Context, gcr getCommentsRequest) []model.Comment {
+	var comments []model.Comment
+	err := us.db.WithContext(ctx).Where("user_id = ?", gcr.UserId).Find(&comments).Error
+	if err != nil {
+		us.log.Error("db error when getting comments for user", zap.Error(err))
+	}
+	return comments
 }

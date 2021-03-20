@@ -17,6 +17,7 @@ func NewHTTPHandler(us UserService) http.Handler {
 	r.Methods("GET").Path("/user/{id}").Handler(transport.NewServer(makeGetUserEndpoint(us), decodeGetUserRequest, encodeResponse))
 	r.Methods("GET").Path("/users").Handler(transport.NewServer(makeGetUsersEndpoint(us), decodeGetUsersRequest, encodeResponse))
 	r.Methods("POST").Path("/user").Handler(transport.NewServer(makeCreateUserEndpoint(us), decodeCreateUserRequest, encodeResponse))
+	r.Methods("GET").Path("/user/{id}/comments").Handler(transport.NewServer(makeGetCommentsEndpoint(us), decodeGetCommentsRequest, encodeResponse))
 	return r
 }
 
@@ -50,6 +51,21 @@ func decodeCreateUserRequest(_ context.Context, r *http.Request) (interface{}, e
 		return nil, err
 	}
 	return req, nil
+}
+
+func decodeGetCommentsRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	vars := mux.Vars(r)
+	userId, ok := vars["id"]
+	if !ok {
+		return nil, errors.New("bad route")
+	}
+
+	id, err := strconv.Atoi(userId)
+	if err != nil {
+		return nil, err
+	}
+
+	return getCommentsRequest{UserId: id}, nil
 }
 
 func encodeResponse(_ context.Context, w http.ResponseWriter, response interface{}) error {
