@@ -42,6 +42,10 @@ func main() {
 	// Http transport router
 	h := internal.NewHTTPHandler(us)
 
+	// decorate the router
+	middleware := internal.RequestLoggingMiddleware(log)
+	h = middleware(h)
+
 	// Run web server
 	log.Debug("serving...")
 	err = http.ListenAndServe(":8082", h)
